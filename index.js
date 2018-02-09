@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
 });
 
 ontime({
-  cycle: ['01:00:00'],
+  cycle: ['00:25:00'],
 }, (ot) => {
   getTelemetries.executeQuery(getTelemetries.getYesterdayStatsQueryByDate(null));
   ot.done();
