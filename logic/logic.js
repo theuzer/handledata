@@ -83,14 +83,15 @@ exports.mapTelemetry = (telemetry) => {
     team2,
   };
 
+  // dataController.insertMatch2(match);
+
   matches.push(match);
   if (matches.length === 100) {
-    dataController.insertMatches(matches);
+    dataController.insertMatch2(matches);
     matches.length = 0;
   } else {
     // console.log(matches.length);
   }
-  // dataController.insertMatch(match);
 };
 
 /*

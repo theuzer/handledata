@@ -1,8 +1,11 @@
 const sql = require('mssql');
 
 const dataConnection = require('../database/azureDb').dataConnection;
+const constants = require('./constants');
 
 const azureDateBuilder = (year, month, day, hour, minute, second) => `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+const azureDateBuilder2 = date => azureDateBuilder(date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
 
 const azureBoolBuilder = bool => bool ? 1 : 0;
 
@@ -94,3 +97,13 @@ exports.insertMatches = (matches) => {
     });
 };
 
+exports.insertMatch2 = (matches) => {
+  const query = constants.insertMatches(matches);
+  new sql.Request(dataConnection).query(query)
+    .then((response) => {
+      console.log('inserted 100');
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};

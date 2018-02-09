@@ -28,6 +28,9 @@ if (process.env.HEROKU_TIMER_CREATE === 'TRUE') {
   }, parseInt(process.env.HEROKU_APP_TIMER, 10));
 }
 
+// const getQuery1 = gameId => `SELECT STATS FROM GAME WHERE GameId = '${gameId}'`;
+// const getQuery2 = "SELECT TOP(100) STATS FROM GAME";
+
 logConnection.connect()
   .then(() => {
     console.log('log connection');
@@ -50,9 +53,7 @@ app.get('/', (req, res) => {
 });
 
 const getQuery = () => {
-  const date = moment().add(-5, 'd');
-  const firstMinute = date.minute();
-  const lastMinute = firstMinute + 14;
+  const date = moment().add(-6, 'd');
   let query = "SELECT STATS FROM GAME WHERE DATEPART(YEAR, LOGDATE) = ";
   query += date.year();
   query += " AND DATEPART(MONTH, LOGDATE) = ";
@@ -61,16 +62,14 @@ const getQuery = () => {
   query += date.date();
   query += " AND DATEPART(HOUR, LOGDATE) = ";
   query += date.hour();
-  query += " AND DATEPART(MINUTE, LOGDATE) >= ";
-  query += firstMinute;
-  query += " AND DATEPART(MINUTE, LOGDATE) <= ";
-  query += lastMinute;
+  query += " AND DATEPART(MINUTE, LOGDATE) = ";
+  query += date.minute();
   console.log(query);
   return query;
 };
 
 ontime({
-  cycle: ['00:00', '15:00', '30:00', '45:00'],
+  cycle: ['45'],
 }, (ot) => {
   getTelemetries.executeQuery(getQuery());
   ot.done();
