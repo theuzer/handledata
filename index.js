@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const ontime = require('ontime');
 const https = require('https');
+const moment = require('moment');
 
 const getTelemetries = require('./logic/getTelemetries');
 const logConnection = require('./database/azureDb').logConnection;
@@ -48,9 +49,29 @@ app.get('/', (req, res) => {
   console.log('a');
 });
 
+const getQuery = () => {
+  const date = moment().add(-5, 'd');
+  const firstMinute = date.minute();
+  const lastMinute = firstMinute + 14;
+  let query = "SELECT STATS FROM GAME WHERE DATEPART(YEAR, LOGDATE) = ";
+  query += date.year();
+  query += " AND DATEPART(MONTH, LOGDATE) = ";
+  query += date.month() + 1;
+  query += " AND DATEPART(DAY, LOGDATE) = ";
+  query += date.date();
+  query += " AND DATEPART(HOUR, LOGDATE) = ";
+  query += date.hour();
+  query += " AND DATEPART(MINUTE, LOGDATE) >= ";
+  query += firstMinute;
+  query += " AND DATEPART(MINUTE, LOGDATE) <= ";
+  query += lastMinute;
+  console.log(query);
+  return query;
+};
+
 ontime({
-  cycle: ['00:30:00'],
+  cycle: ['00:00', '15:00', '30:00', '45:00'],
 }, (ot) => {
-  getTelemetries.executeQuery(getTelemetries.getYesterdayStatsQueryByDate(null));
+  getTelemetries.executeQuery(getQuery());
   ot.done();
 });
