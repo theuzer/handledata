@@ -13,15 +13,15 @@ const getStatsQueryByDateAndNumberOfResults = (year, month, day, numberOfResults
 
 const getStatsQueryByDate = (year, month, day) => `SELECT STATS FROM GAME WHERE DATEPART(YEAR, LOGDATE) = ${year} AND DATEPART(MONTH, LOGDATE) = ${month} AND DATEPART(DAY, LOGDATE) = ${day};`;
 
-const doWork = (workerNum) => {
+const doWork = (workerNum, query) => {
   if (responseQueue.length) {
     const url = responseQueue.shift();
     axios.get(url)
       .then((response) => {
         //telemetriesList.push(response.data);
-        logic.mapTelemetry(response.data);
+        logic.mapTelemetry(response.data, query);
         //processTelemetries();
-        doWork(workerNum);
+        doWork(workerNum, query);
       })
       .catch((err) => {
         console.log(err.message);
@@ -31,11 +31,11 @@ const doWork = (workerNum) => {
   }
 };
 
-const wakeWorkers = (totalWorkers) => {
+const wakeWorkers = (totalWorkers, query) => {
   const workersToWake = totalWorkers - runningWorkers;
   for (let i = 0; i < workersToWake; i++) {
     runningWorkers += 1;
-    doWork(i);
+    doWork(i, query);
   }
 };
 
@@ -57,7 +57,7 @@ exports.executeQuery = (query) => {
       response.recordset.forEach((record) => {
         responseQueue.push(record.STATS);
       });
-      wakeWorkers(maxWorkers);
+      wakeWorkers(maxWorkers, query);
     })
     .catch((err) => {
       console.log(err);

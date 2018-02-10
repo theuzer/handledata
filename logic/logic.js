@@ -61,7 +61,7 @@ const mapTeam = (teamNo, players, talents, win) => {
 
 const matches = [];
 
-exports.mapTelemetry = (telemetry) => {
+exports.mapTelemetry = (telemetry, query) => {
   const matchStartEvent = extractMatchStart(telemetry)[0].dataObject;
   const matchFinishEvent = extractMatchFinished(telemetry)[0].dataObject;
   const players = extractPlayers(telemetry);
@@ -87,7 +87,7 @@ exports.mapTelemetry = (telemetry) => {
 
   matches.push(match);
   if (matches.length === 100) {
-    dataController.insertMatch2(matches);
+    dataController.insertMatch2(matches, query);
     matches.length = 0;
   } else {
     // console.log(matches.length);

@@ -97,7 +97,15 @@ exports.insertMatches = (matches) => {
     });
 };
 
-exports.insertMatch2 = (matches) => {
+const insertError = (query2) => {
+  const query = `INSERT INTO ERROR (Query) VALUES ('${query2}');`;
+  new sql.Request(dataConnection).query(query)
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+exports.insertMatch2 = (matches, query2) => {
   const query = constants.insertMatches(matches);
   new sql.Request(dataConnection).query(query)
     .then((response) => {
@@ -105,5 +113,6 @@ exports.insertMatch2 = (matches) => {
     })
     .catch((err) => {
       console.log(err);
+      insertError(query2);
     });
 };
