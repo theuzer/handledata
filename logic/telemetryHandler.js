@@ -1,6 +1,6 @@
 const dataController = require('./dataController');
 
-const sortByTimestamp = telemetry => telemetry.sort((a, b) => a.cursor - b.cursor);
+// const sortByTimestamp = telemetry => telemetry.sort((a, b) => a.cursor - b.cursor);
 const filterTelemetry = (telemetry, type) => telemetry.filter(x => x.type === type);
 const extractMatchStart = telemetry => filterTelemetry(telemetry, "Structures.MatchStart");
 const extractPlayers = telemetry => filterTelemetry(telemetry, "Structures.MatchReservedUser");
@@ -16,7 +16,8 @@ const mapTalents = (talents) => {
     const item = talents[i].dataObject.battleriteType;
     if (seen[item] !== 1) {
       seen[item] = 1;
-      out[j++] = item;
+      j += 1;
+      out[j] = item;
     }
   }
   return out;
@@ -85,24 +86,10 @@ exports.mapTelemetry = (telemetry, query) => {
       team2,
     };
 
-    // dataController.insertMatch2(match);
-
     matches.push(match);
     if (matches.length === 100) {
-      dataController.insertMatch2(matches, query);
+      dataController.insertTelemetries(matches, query);
       matches.length = 0;
-    } else {
-    // console.log(matches.length);
     }
   }
 };
-
-/*
-exports.mapTelemetries = (telemetries) => {
-  const matches = [];
-  telemetries.forEach((telemetry) => {
-    matches.push(mapTelemetry(telemetry));
-  });
-  dataController.insertMatches(matches);
-};
-*/
