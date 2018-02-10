@@ -107,6 +107,7 @@ const insertError = (query2) => {
 
 exports.insertMatch2 = (matches, query2) => {
   const query = constants.insertMatches(matches);
+
   new sql.Request(dataConnection).query(query)
     .then((response) => {
       console.log('inserted 100');

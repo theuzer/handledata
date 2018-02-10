@@ -28,8 +28,9 @@ if (process.env.HEROKU_TIMER_CREATE === 'TRUE') {
   }, parseInt(process.env.HEROKU_APP_TIMER, 10));
 }
 
-// const getQuery1 = gameId => `SELECT STATS FROM GAME WHERE GameId = '${gameId}'`;
+const getQuery1 = gameId => `SELECT STATS FROM GAME WHERE GameId = '${gameId}'`;
 // const getQuery2 = "SELECT TOP(100) STATS FROM GAME";
+const getQuery3 = "SELECT STATS FROM GAME WHERE DATEPART(YEAR, LOGDATE) = 2018 AND DATEPART(MONTH, LOGDATE) = 2 AND DATEPART(DAY, LOGDATE) = 4 AND DATEPART(HOUR, LOGDATE) = 14 AND DATEPART(MINUTE, LOGDATE) = 40";
 
 logConnection.connect()
   .then(() => {

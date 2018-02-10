@@ -62,35 +62,38 @@ const mapTeam = (teamNo, players, talents, win) => {
 const matches = [];
 
 exports.mapTelemetry = (telemetry, query) => {
-  const matchStartEvent = extractMatchStart(telemetry)[0].dataObject;
   const matchFinishEvent = extractMatchFinished(telemetry)[0].dataObject;
-  const players = extractPlayers(telemetry);
-  const talents = extractTalentPickEvents(telemetry);
 
-  const team1 = mapTeam(1, players, talents, matchFinishEvent.teamOneScore > matchFinishEvent.teamTwoScore);
-  const team2 = mapTeam(2, players, talents, matchFinishEvent.teamTwoScore > matchFinishEvent.teamOneScore);
+  if (matchFinishEvent.leavers.length === 0) {
+    const matchStartEvent = extractMatchStart(telemetry)[0].dataObject;
+    const players = extractPlayers(telemetry);
+    const talents = extractTalentPickEvents(telemetry);
 
-  const match = {
-    mapId: matchStartEvent.mapID,
-    matchId: matchStartEvent.matchID,
-    region: matchStartEvent.region,
-    date: new Date(matchStartEvent.time),
-    type: matchStartEvent.type,
-    patch: matchStartEvent.version,
-    teamSize: matchStartEvent.teamSize,
-    isRanked: isRanked(players),
-    team1,
-    team2,
-  };
+    const team1 = mapTeam(1, players, talents, matchFinishEvent.teamOneScore > matchFinishEvent.teamTwoScore);
+    const team2 = mapTeam(2, players, talents, matchFinishEvent.teamTwoScore > matchFinishEvent.teamOneScore);
 
-  // dataController.insertMatch2(match);
+    const match = {
+      mapId: matchStartEvent.mapID,
+      matchId: matchStartEvent.matchID,
+      region: matchStartEvent.region,
+      date: new Date(matchStartEvent.time),
+      type: matchStartEvent.type,
+      patch: matchStartEvent.version,
+      teamSize: matchStartEvent.teamSize,
+      isRanked: isRanked(players),
+      team1,
+      team2,
+    };
 
-  matches.push(match);
-  if (matches.length === 100) {
-    dataController.insertMatch2(matches, query);
-    matches.length = 0;
-  } else {
+    // dataController.insertMatch2(match);
+
+    matches.push(match);
+    if (matches.length === 100) {
+      dataController.insertMatch2(matches, query);
+      matches.length = 0;
+    } else {
     // console.log(matches.length);
+    }
   }
 };
 
