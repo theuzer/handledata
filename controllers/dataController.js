@@ -1,6 +1,7 @@
 const sql = require('mssql');
 
 const dataConnection = require('../database/azureDb').dataConnection;
+const errorController = require('./errorController');
 
 const azureDateBuilder = (year, month, day, hour, minute, second) => `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 const dateBuilder = date => azureDateBuilder(date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
@@ -48,8 +49,9 @@ const doQuery = (query, query2) => {
       console.log('inserted 100');
     })
     .catch((err) => {
-      console.log(err);
-      insertError(query2);
+      if (err.code === 'EREQUEST') {
+        insertError(query2);
+      }
     });
 };
 
@@ -59,17 +61,26 @@ exports.insertTelemetries = (matches, query2) => {
   doQuery(query, query2);
 
   let numberOfRetries = 100;
+  let attemptToSave;
+  let errorMessage;
+  let isRunning = false;
 
-  sql.on('error', (err) => {
-    if (err.code === 'ETIMEOUT') {
-      if (numberOfRetries > 0) {
-        // errorController.createErrorMongo(`timeout saving games. attempt ${(constants.azure.numberOfRetries - numberOfRetries) + 1}`);
-        setTimeout(() => {
-          numberOfRetries -= 1;
-          doQuery(query, query2);
-        }, 45000);
-      } else {
-        // notLoggedGameController.createNotLoggedGames(games);
+  dataConnection.on('error', (err) => {
+    if (!isRunning) {
+      isRunning = true;
+      if (err.code === 'ETIMEOUT') {
+        if (numberOfRetries > 0) {
+          attemptToSave = (100 - numberOfRetries) + 1;
+          errorMessage = `timeout saving games. attempt ${attemptToSave}`;
+          errorController.createErrorMongo(errorMessage, attemptToSave);
+          setTimeout(() => {
+            numberOfRetries -= 1;
+            isRunning = false;
+            doQuery(query, query2);
+          }, 45000);
+        } else {
+          // notLoggedGameController.createNotLoggedGames(games);
+        }
       }
     }
   });

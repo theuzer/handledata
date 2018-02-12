@@ -1,4 +1,4 @@
-const dataController = require('./dataController');
+const dataController = require('../controllers/dataController');
 
 // const sortByTimestamp = telemetry => telemetry.sort((a, b) => a.cursor - b.cursor);
 const filterTelemetry = (telemetry, type) => telemetry.filter(x => x.type === type);
