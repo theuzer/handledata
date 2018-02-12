@@ -1,10 +1,10 @@
 const sql = require('mssql');
 
 const logConfig = {
-  server: process.env.DB_LOG_SERVER,
-  database: process.env.DB_LOG_DATABASE,
-  user: process.env.DB_LOG_USERNAME,
-  password: process.env.DB_LOG_PASSWORD,
+  server: process.env.DB_LOG_SERVER || "testserver-logdata.database.windows.net",
+  database: process.env.DB_LOG_DATABASE || "MyDatabase",
+  user: process.env.DB_LOG_USERNAME || "david",
+  password: process.env.DB_LOG_PASSWORD || "Admin123",
   port: 1433,
   options: { encrypt: true },
 };
