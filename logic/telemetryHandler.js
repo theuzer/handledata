@@ -87,7 +87,7 @@ exports.mapTelemetry = (telemetry, query) => {
     };
 
     matches.push(match);
-    if (matches.length === 100) {
+    if (matches.length === 20) {
       dataController.insertTelemetries(matches, query);
       matches.length = 0;
     }
