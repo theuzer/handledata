@@ -42,9 +42,7 @@ const insertError = (query2) => {
     });
 };
 
-exports.insertTelemetries = (matches, query2) => {
-  const query = getInsertTelemetriesQuery(matches);
-
+const doQuery = (query, query2) => {
   new sql.Request(dataConnection).query(query)
     .then(() => {
       console.log('inserted 100');
@@ -53,4 +51,26 @@ exports.insertTelemetries = (matches, query2) => {
       console.log(err);
       insertError(query2);
     });
+};
+
+exports.insertTelemetries = (matches, query2) => {
+  const query = getInsertTelemetriesQuery(matches);
+
+  doQuery(query, query2);
+
+  let numberOfRetries = 100;
+
+  sql.on('error', (err) => {
+    if (err.code === 'ETIMEOUT') {
+      if (numberOfRetries > 0) {
+        // errorController.createErrorMongo(`timeout saving games. attempt ${(constants.azure.numberOfRetries - numberOfRetries) + 1}`);
+        setTimeout(() => {
+          numberOfRetries -= 1;
+          doQuery(query, query2);
+        }, 45000);
+      } else {
+        // notLoggedGameController.createNotLoggedGames(games);
+      }
+    }
+  });
 };
