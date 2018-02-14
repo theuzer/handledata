@@ -39,6 +39,12 @@ app.get('/', (req, res) => {
 ontime({
   cycle: ['45'],
 }, (ot) => {
-  telemetryRetriever.init();
+  const currDate = new Date();
+  const limitDate = new Date(2018, 1, 19, 21, 48);
+  if (currDate < limitDate) {
+    telemetryRetriever.init();
+  } else {
+    console.log(`not running ${currDate}`);
+  }
   ot.done();
 });
